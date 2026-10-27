@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        /* Визуальное оформление */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #2c3e50;
+            color: #ecf0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background: #34495e;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            color: #3498db;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 2px solid #7f8c8d;
+            border-radius: 5px;
+            background: #ecf0f1;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+            input:focus {
+                border-color: #3498db;
+            }
+            /* Стили для ошибок */
+            input.invalid {
+                border-color: #e74c3c;
+                background: #fadbd8;
+            }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 12px;
+            display: none;
+            margin-top: 5px;
+        }
+
+            .error-msg.active {
+                display: block;
+            }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+            button:hover {
+                background: #2ecc71;
+            }
+
+        /* Стиль для сообщения об успехе */
+        .success-msg {
+            display: none;
+            text-align: center;
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid #2ecc71;
+            border-radius: 5px;
+        }
+
+            .success-msg.active {
+                display: block;
+            }
+    </style>
+</head>
+<body>
+
+    <form id="regForm" action="/register" method="POST">
+        <h2>Регистрация</h2>
+
+        <!-- 1. ФИО -->
+        <div class="form-group">
+            <label for="fio">ФИО:</label>
+            <input type="text" id="fio" name="fio" placeholder="Иванов Иван Иванович">
+            <div class="error-msg" id="err-fio">Только буквы (рус/англ) и пробелы</div>
+        </div>
+
+        <!-- 2. Логин -->
+        <div class="form-group">
+            <label for="login">Логин:</label>
+            <input type="text" id="login" name="login" placeholder="Login123!@#...">
+            <div class="error-msg" id="err-login">Мин. 15 символов: заглавные, строчные (лат.), 3 цифры, спецсимвол</div>
+        </div>
+
+        <!-- 3. Email -->
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" placeholder="mail@example.com">
+            <div class="error-msg" id="err-email">Введите корректный email (латиница)</div>
+        </div>
+
+        <!-- 4. Возраст -->
+        <div class="form-group">
+            <label for="age">Возраст:</label>
+            <input type="text" id="age" name="age" placeholder="От 6 до 99">
+            <div class="error-msg" id="err-age">Возраст от 6 до 99 лет</div>
+        </div>
+
+        <!-- 5. Пароль -->
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password">
+            <div class="error-msg" id="err-password">Мин. 15 символов: заглавные, строчные (кириллица), 3 цифры, спецсимвол</div>
+        </div>
+
+        <button type="submit">Зарегистрироваться</button>
+
+        <!-- Сообщение об успешной отправке -->
+        <div class="success-msg" id="success-msg">Форма отправлена</div>
+    </form>
+
+    <script>
+        const form = document.getElementById('regForm');
+        const successMsg = document.getElementById('success-msg');
+
+        const regex = {
+            fio: /^[А-Яа-яЁёA-Za-z\s]+$/,
+            login: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d{3,})(?=.*[^\w\s]).{15,}$/,
+            email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            age: /^(?:[6-9]|[1-9]\d)$/,
+            password: /^(?=.*[а-яё])(?=.*[А-ЯЁ])(?=.*\d{3,})(?=.*[^\w\s]).{15,}$/
+        };
+
+        function validateField(inputId, regexPattern) {
+            const input = document.getElementById(inputId);
+            const errorMsg = document.getElementById('err-' + inputId);
+            const value = input.value.trim();
+
+            if (!regexPattern.test(value)) {
+                input.classList.add('invalid');
+                errorMsg.classList.add('active');
+                return false;
+            } else {
+                input.classList.remove('invalid');
+                errorMsg.classList.remove('active');
+                return true;
+            }
+        }
+
+        form.addEventListener('submit', function (event) {
+            // Блокируем стандартную отправку формы (перезагрузку страницы)
+            event.preventDefault();
+
+            // Скрываем сообщение об успехе при новой попытке отправки
+            successMsg.classList.remove('active');
+
+            const isFioValid = validateField('fio', regex.fio);
+            const isLoginValid = validateField('login', regex.login);
+            const isEmailValid = validateField('email', regex.email);
+            const isAgeValid = validateField('age', regex.age);
+            const isPasswordValid = validateField('password', regex.password);
+
+            // Если все поля валидны
+            if (isFioValid && isLoginValid && isEmailValid && isAgeValid && isPasswordValid) {
+                // Показываем надпись "Форма отправлена"
+                successMsg.classList.add('active');
+
+                // Очищаем форму (опционально, если нужно)
+                // form.reset();
+
+                // Если бы был сервер, здесь был бы fetch() запрос:
+                // fetch(form.action, { method: form.method, body: new FormData(form) });
+            }
+        });
+
+        // Проверка в реальном времени при вводе
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function () {
+                const id = this.id;
+                if (regex[id]) {
+                    validateField(id, regex[id]);
+                }
+                // Если пользователь начал править форму, скрываем надпись об успехе
+                successMsg.classList.remove('active');
+            });
+        });
+    </script>
+
+</body>
+</html>
